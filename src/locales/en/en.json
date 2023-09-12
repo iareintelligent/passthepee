@@ -1,0 +1,10 @@
+{
+  "welcomeTitle": "When will I (probably) pass a urinalysis?",
+  "welcomeDescription": "Calculating the time it takes for THC (the primary psychoactive component in cannabis) to leave the system is quite complex. It's influenced by numerous factors, including the quantity and frequency of consumption, individual metabolism, fat content in the body, and exercise routine, to name a few.\n\nHere is a simple model to calculate the last day they can smoke, keeping in mind that this is just an estimation and can vary widely among individuals. Always recommend to the users that if they are being tested, to err on the side of caution.",
+  "contactUs": {
+    "title": "Contact Us",
+    "description": "For any inquiries or feedback, please reach out to our team:",
+    "topherEmail": "topher@chagrr.com",
+    "mindaEmail": "minda@chagrr.com"
+  }
+}
