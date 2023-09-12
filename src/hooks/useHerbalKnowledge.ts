@@ -37,8 +37,8 @@ export const simulateThcClearance = (initialThc: number, halfLife: number): numb
     let days_to_clear = 0;
 
     const initialState: CompartmentState = {
-        bloodThc: initialThc * 0.5, // Assuming 50% goes immediately to the bloodstream.
-        fatThc: initialThc * 0.5    // Assuming 50% is stored in fat cells.
+        bloodThc: initialThc * 0.8, // Assuming 50% goes immediately to the bloodstream.
+        fatThc: initialThc * 0.2    // Assuming 50% is stored in fat cells.
     };
 
     const currentState = { ...initialState };

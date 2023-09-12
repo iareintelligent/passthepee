@@ -1,6 +1,7 @@
 import React from "react";
 import {UseFormRegister} from "react-hook-form";
 import { TextField } from "@mui/material";
+import {CombinedFormData} from "../../App";
 
 
 export type ThcIntakeFormData = {
@@ -14,7 +15,7 @@ export type ThcIntakeFormData = {
 
 interface ThcIntakeValuesProps {
     onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
-    register: UseFormRegister<ThcIntakeFormData>;
+    register: UseFormRegister<Partial<CombinedFormData>>;
 }
 
 export default function ThcIntakeValues(props: ThcIntakeValuesProps) {

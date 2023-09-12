@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {FieldValues, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {
     Container,
     Typography,
@@ -19,11 +19,12 @@ import {HelpOutline} from "@mui/icons-material";
 import EstimateHalfLifeValues, {HalfLifeFormData} from "./components/Forms/EstimateHalfLifeValues";
 import AdjustHalfLifeValues, {AdjustHalfLifeFormData} from "./components/Forms/AdjustHalfLife";
 
+export interface CombinedFormData extends ThcIntakeFormData, HalfLifeFormData, AdjustHalfLifeFormData {}
+
 
 function App() {
-    const { register: intakeRegister, handleSubmit: intakeHandleSubmit } = useForm<ThcIntakeFormData>();
-    const { register: halfLifeRegister, handleSubmit: halfLifeHandleSubmit } = useForm<HalfLifeFormData>();
-    const { register: adjustmentsRegister, handleSubmit: adjustmentsHandleSubmit } = useForm<AdjustHalfLifeFormData>();
+    const { register, handleSubmit } = useForm<Partial<CombinedFormData>>();
+
     const { t } = useTranslation();
 
     const [onboardThcInMg, setOnboardThcInMg] = useState<number>(0);
@@ -51,25 +52,27 @@ function App() {
     }, [clearanceTime]);
 
 
-    const onIntakeSubmit = (data: FieldValues) => {
-        const { joints, looseHerb, vapingSessions, edibles, yearsOfUsage } = data;
+    const onSubmit = (data: Partial<CombinedFormData>) => {
+        const { joints, looseHerb, vapingSessions, edibles, yearsOfUsage, frequency, hrsDailyExercise, weight } = data;
+
+        // Handle THC Intake
         setOnboardThcInMg(calculateThcIntake(joints, looseHerb, vapingSessions, edibles, yearsOfUsage));
-        setInputDetected(true);
-    };
+        let estimatedValue = 0;
+        // Handle Half Life Estimate
+        if (frequency && yearsOfUsage) {
+            estimatedValue = estimateHalfLife(frequency, yearsOfUsage);
+            setEstimatedHalfLife(estimatedValue);
+            setHalfLife(estimatedValue);
+        }
 
-    const onHalfLifeSubmit = (data: FieldValues) => {
-        const { frequency, yearsOfUsage } = data;
-        const estimatedValue = estimateHalfLife(frequency, yearsOfUsage);
-        setEstimatedHalfLife(estimatedValue);
-        setHalfLife(estimatedValue);
-        setInputDetected(true);
-    };
+        if (estimatedValue && hrsDailyExercise && weight) {
+            // Handle Half Life Adjustments
+            const adjustedValue = adjustHalfLife(estimatedValue, hrsDailyExercise, weight);
+            setAdjustedHalfLife(adjustedValue);
+            setHalfLife(adjustedValue);
 
-    const onAdjustHalfLifeSubmit = (data: FieldValues) => {
-        const { hrsDailyExercise, weight } = data;
-        const adjustedValue = adjustHalfLife(halfLife, hrsDailyExercise, weight); // Use the state's halfLife directly
-        setAdjustedHalfLife(adjustedValue);
-        setHalfLife(adjustedValue);
+            setInputDetected(true);
+        }
     };
 
     const calculateClearanceTime = () => {
@@ -126,13 +129,13 @@ function App() {
                             <Typography variant="h2">{onboardThcInMg}mg</Typography>
                             <Typography variant="body2"> of THC to process</Typography>
                         </Box>
-                        <ThcIntakeValues onSubmit={intakeHandleSubmit(onIntakeSubmit)}
-                            register={intakeRegister}
+                        <ThcIntakeValues onSubmit={handleSubmit(onSubmit)}
+                            register={register}
                         />
                     </Route>
                     <Route path="/estimate-half-life">
                         <Typography variant="h2">{estimatedHalfLife} days</Typography>
-                        <EstimateHalfLifeValues onSubmit={halfLifeHandleSubmit(onHalfLifeSubmit)} register={halfLifeRegister} />
+                        <EstimateHalfLifeValues onSubmit={handleSubmit(onSubmit)} register={register} />
                     </Route>
 
                     <Route path="/adjust-half-life">
@@ -142,7 +145,7 @@ function App() {
                         >
                             Estimated Half-Life: {halfLife} days
                         </Typography>
-                        <AdjustHalfLifeValues halfLifeDefault={halfLife} onSubmit={adjustmentsHandleSubmit(onAdjustHalfLifeSubmit)} register={adjustmentsRegister} />
+                        <AdjustHalfLifeValues halfLifeDefault={halfLife} onSubmit={handleSubmit(onSubmit)} register={register} />
                     </Route>
                     <Route path="/estimate-clearance-time">
                         <Typography variant="h2">{clearanceTime.toFixed(2)} days to clear</Typography>

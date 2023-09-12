@@ -1,6 +1,7 @@
 import React from "react";
 import { UseFormRegister } from "react-hook-form";
 import { TextField } from "@mui/material";
+import {CombinedFormData} from "../../App";
 
 export type HalfLifeFormData = {
     frequency: number;
@@ -9,7 +10,7 @@ export type HalfLifeFormData = {
 
 interface EstimateHalfLifeValuesProps {
     onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
-    register: UseFormRegister<HalfLifeFormData>;
+    register: UseFormRegister<Partial<CombinedFormData>>;
 }
 
 export default function EstimateHalfLifeValues(props: EstimateHalfLifeValuesProps) {
